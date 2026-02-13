@@ -78,13 +78,18 @@ if boton_registro:
                     "cnal": canal_info
                 })
             
-            st.success(f"¡Registro exitoso para {titulo_evento}! Redirigiendo a Zoom...")
+            st.success(f"¡Registro exitoso para {titulo_evento}!")
             st.balloons()
             
-            # --- REDIRECCIÓN AUTOMÁTICA A ZOOM ---
-            js = f'<meta http-equiv="refresh" content="2; url={link_zoom_final}">'
-            st.write(js, unsafe_allow_html=True)
-            st.markdown(f"Si no redirige, [haz clic aquí para entrar a Zoom]({link_zoom_final})")
+            st.info("🔄 Redirigiendo a la sala de Zoom en 3 segundos...")
+            time.sleep(3) # Pausa pequeña para que vean el mensaje
+            
+            # Botón de respaldo por si el navegador bloquea ventanas emergentes
+            st.link_button("👉 CLICK AQUÍ PARA ENTRAR AHORA", link_zoom_final)
+            
+            # Redirección automática
+            js = f'<script>window.location.href = "{link_zoom_final}";</script>'
+            st.components.v1.html(js, height=0)
             
         except Exception as e:
             st.error(f"Error detallado: {str(e)}")
