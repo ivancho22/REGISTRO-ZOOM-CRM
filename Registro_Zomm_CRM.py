@@ -64,12 +64,11 @@ if boton_registro:
     if nombre and institucion:
         try:
             with engine.begin() as conn:
-                query = text("""
-                    INSERT INTO directorio_tratamiento 
-                    (contacto_nombre, institucion, rol_cargo, email, habeas_data, canal_autorizacion) 
-                    VALUES (:nom, :inst, :rol, :mail, :hab, :cnal)
-                """)
+                # He reescrito la consulta en una sola línea para eliminar caracteres ocultos
+                query = text("INSERT INTO directorio_tratamiento (contacto_nombre, institucion, rol_cargo, email, habeas_data, canal_autorizacion) VALUES (:nom, :inst, :rol, :mail, :hab, :cnal)")
+                
                 canal_info = f"Streaming: {titulo_evento} - {time.strftime('%d/%m/%Y')}"
+                
                 conn.execute(query, {
                     "nom": nombre, 
                     "inst": institucion, 
@@ -77,7 +76,6 @@ if boton_registro:
                     "rol": rol_cargo,
                     "hab": 1,
                     "cnal": canal_info
-                    
                 })
             
             st.success(f"¡Registro exitoso para {titulo_evento}! Redirigiendo a Zoom...")
@@ -89,7 +87,7 @@ if boton_registro:
             st.markdown(f"Si no redirige, [haz clic aquí para entrar a Zoom]({link_zoom_final})")
             
         except Exception as e:
-            st.error(f"Error técnico: {e}")
+            st.error(f"Error detallado: {str(e)}")
     elif not acepta:
         st.warning("Debe aceptar el tratamiento de datos para ingresar.")
     else:
