@@ -61,13 +61,20 @@ with st.form("registro_publico", clear_on_submit=True):
     boton_registro = st.form_submit_button("REGISTRARME E INGRESAR A ZOOM")
 
 if boton_registro:
-    if nombre and institucion:
+    if nombre and institucion and acepta: # Añadí 'acepta' a la validación
         try:
             with engine.begin() as conn:
-                # He reescrito la consulta en una sola línea para eliminar caracteres ocultos
-                query = text("INSERT INTO directorio_tratamiento (contacto_nombre, institucion, rol_cargo, email, habeas_data, canal_autorizacion) VALUES (:nom, :inst, :rol, :mail, :hab, :cnal)")
+                # Buscamos también el slug en el query inicial para tenerlo a mano
+                query = text("""
+                    INSERT INTO directorio_tratamiento 
+                    (contacto_nombre, institucion, rol_cargo, email, habeas_data, canal_autorizacion) 
+                    VALUES (:nom, :inst, :rol, :mail, :hab, :cnal)
+                """)
                 
-                canal_info = f"Streaming: {titulo_evento} - {time.strftime('%d/%m/%Y')}"
+                # CAMBIO CLAVE: Incluimos el slug_curso en el canal para que el CRM lo rastree
+                # Formato: "Streaming: [Slug] - [Fecha]"
+                fecha_hoy = time.strftime('%d/%m/%Y')
+                canal_info = f"Streaming: {slug_curso} | {titulo_evento} - {fecha_hoy}"
                 
                 conn.execute(query, {
                     "nom": nombre, 
